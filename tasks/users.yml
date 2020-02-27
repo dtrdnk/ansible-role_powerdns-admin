@@ -1,0 +1,26 @@
+---
+- name: Add PowerDNS group
+  group:
+    name: "{{ pdnsadmin_group }}"
+    state: 'present'
+    system: true
+  become: true
+
+- name: Add PowerDNS user
+  user:
+    group: "{{ pdnsadmin_group }}"
+    home: "{{ pdnsadmin_user_home }}"
+    name: "{{ pdnsadmin_user }}"
+    shell: '/sbin/nologin'
+    state: 'present'
+    system: true
+  become: true
+
+- name: 'Ensure working directory exists'
+  file:
+    group: "{{ pdnsadmin_group }}"
+    owner: "{{ pdnsadmin_user }}"
+    path: "{{ pdnsadmin_work_path }}"
+    recurse: true
+    state: 'directory'
+  become: true

@@ -1,0 +1,21 @@
+---
+# tasks file for ansible-role_powerdns-admin
+- name: 'Include distro family specific variables'
+  include_vars: "{{ ansible_os_family }}.yml"
+
+- name: 'Include distro specific variables'
+  include_vars: "{{ ansible_distribution }}.yml"
+
+- include: users.yml
+
+- include: parameters.yml
+
+- include: requirements.yml
+
+- include: "{{ role_path }}/tasks/download/{{ pdnsadmin_download_method }}.yml"
+
+- include: install.yml
+
+- include: configuration.yml
+
+- include: services.yml

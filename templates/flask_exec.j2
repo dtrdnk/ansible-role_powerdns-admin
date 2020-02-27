@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+set -eo pipefail
+export FLASK_CONF="{{ pdnsadmin_work_path }}/PowerDNS_Admin_config.py"
+export FLASK_APP="{{ pdnsadmin_version_path }}/powerdnsadmin/__init__.py"
+source "{{ pdnsadmin_venv_path }}/bin/activate"
+cd "{{ pdnsadmin_version_path }}"
+"$@"

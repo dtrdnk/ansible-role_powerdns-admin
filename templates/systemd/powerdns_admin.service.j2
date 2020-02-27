@@ -1,0 +1,18 @@
+[Unit]
+Description={{ pdnsadmin_name }}
+Requires=powerdns_admin.socket
+After=network.target
+
+[Service]
+PIDFile=/run/powerdns-admin/pid
+User={{ pdnsadmin_user }}
+Group={{ pdnsadmin_group }}
+WorkingDirectory={{ pdnsadmin_version_path }}
+ExecStart={{ pdnsadmin_venv_path }}/bin/gunicorn --pid /run/powerdns-admin/pid --bind unix:/run/powerdns-admin/socket 'powerdnsadmin:create_app()'
+ExecReload=/bin/kill -s HUP $MAINPID
+ExecStop=/bin/kill -s TERM $MAINPID
+PrivateTmp=true
+Environment=FLASK_CONF="{{ pdnsadmin_work_path }}/PowerDNS_Admin_config.py"
+
+[Install]
+WantedBy=multi-user.target

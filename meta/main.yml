@@ -1,0 +1,18 @@
+---
+galaxy_info:
+  author: r8l
+  description: Independant Contractor
+  company: r8l
+  license: BSD
+
+  min_ansible_version: 2.9
+  github_branch: master
+
+  platforms:
+  - name: Ubuntu
+    versions:
+    - bionic
+
+  galaxy_tags: ['powerdns', 'powerdns-admin']
+
+dependencies: []

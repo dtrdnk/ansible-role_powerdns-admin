@@ -1,0 +1,9 @@
+---
+- meta: flush_handlers
+
+- name: "Ensure {{ pdnsadmin_service_name }} is {{ pdnsadmin_service_state }}"
+  service:
+    name: "{{ pdnsadmin_service_name }}"
+    state: "{{ pdnsadmin_service_state }}"
+    enabled: "{{ pdnsadmin_service_enabled }}"
+  become: true

@@ -1,0 +1,44 @@
+---
+- name: 'Set default for pdnsadmin_requirements'
+  set_fact:
+    pdnsadmin_requirements: "{{ __pdnsadmin_requirements }}"
+  when: pdnsadmin_requirements is not defined
+
+- name: 'Set default for yarn_key_url'
+  set_fact:
+    yarn_key_url: "{{ __yarn_key_url }}"
+  when: yarn_key_url is not defined
+
+- name: 'Set default for yarn_apt_repo'
+  set_fact:
+    yarn_apt_repo: "{{ __yarn_apt_repo }}"
+  when: yarn_apt_repo is not defined
+
+- name: 'Set default for node_key_url'
+  set_fact:
+    node_key_url: "{{ __node_key_url }}"
+  when: node_key_url is not defined
+
+- name: 'Set default for node_apt_repos'
+  set_fact:
+    node_apt_repos: "{{ __node_apt_repos }}"
+  when: node_apt_repos is not defined
+
+- name: 'Set default for pdnsadmin_secret_path'
+  set_fact:
+    pdnsadmin_secret_path: "~/.ansible/secrets/{{ ansible_hostname }}/{{ ansible_play_name }}/{{ role_name }}"
+
+- name: 'Set default for pdnsadmin_salt'
+  set_fact:
+    pdnsadmin_salt: "{{ lookup('password', pdnsadmin_secret_path  + '/app_salt length=32') }}"
+  when: pdnsadmin_salt is not defined
+
+- name: 'Set default for pdnsadmin_secret_key'
+  set_fact:
+    pdnsadmin_secret_key: "{{ lookup('password', pdnsadmin_secret_path + '/app_secret_key length=32') }}"
+  when: pdnsadmin_secret_key is not defined
+
+- name: 'Set default for pdnsadmin_db_password'
+  set_fact:
+    pdnsadmin_db_password: "{{ lookup('password', pdnsadmin_secret_path + '/mysqlpassword length=32') }}"
+  when: pdnsadmin_db_password is not defined

@@ -1,0 +1,9 @@
+---
+- name: Converge
+  hosts: all
+  roles:
+    - role: ansible-role_powerdns-admin
+  vars:
+    mysql_root_username: 'root'
+    mysql_root_password: 'fDMTJE6DCd7VdSHkZk88vSZ46BnwhEkj'
+    ansible_python_interpreter: '/usr/bin/python3'

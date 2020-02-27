@@ -1,0 +1,19 @@
+---
+- name: 'Download PowerDNS Admin'
+  get_url:
+    dest: "{{ pdnsadmin_work_path }}/{{ pdnsadmin_release_file }}"
+    group: "{{ pdnsadmin_group }}"
+    mode: "660"
+    owner: "{{ pdnsadmin_user }}"
+    url: "{{ pdnsadmin_release_url }}"
+  become: true
+
+- name: 'Extract PowerDNS-Admin archive'
+  unarchive:
+    creates: "{{ pdnsadmin_version_path }}"
+    dest: "{{ pdnsadmin_work_path }}"
+    group: "{{ pdnsadmin_group }}"
+    owner: "{{ pdnsadmin_user }}"
+    remote_src: true
+    src: "{{ pdnsadmin_work_path }}/{{ pdnsadmin_release_file }}"
+  become: true

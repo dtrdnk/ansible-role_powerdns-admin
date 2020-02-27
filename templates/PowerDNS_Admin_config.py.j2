@@ -1,0 +1,23 @@
+{{ ansible_managed | comment }}
+import os
+basedir = os.path.abspath(os.path.abspath(os.path.dirname(__file__)))
+
+### BASIC APP CONFIG
+SALT = '{{ pdnsadmin_salt }}'
+SECRET_KEY = '{{ pdnsadmin_secret_key }}'
+BIND_ADDRESS = '{{ pdnsadmin_bind_addr }}'
+PORT = {{ pdnsadmin_bind_port }}
+HSTS_ENABLED = False
+
+### DATABASE CONFIG
+SQLA_DB_USER = '{{ pdnsadmin_db_user }}'
+SQLA_DB_PASSWORD = '{{ pdnsadmin_db_password }}'
+SQLA_DB_HOST = '{{ pdnsadmin_db_host }}'
+SQLA_DB_NAME = '{{ pdnsadmin_db_name }}'
+SQLALCHEMY_TRACK_MODIFICATIONS = True
+
+### DATBASE
+SQLALCHEMY_DATABASE_URI = '{{ pdnsadmin_sb_uri }}'
+
+# SAML Authnetication
+SAML_ENABLED = False
