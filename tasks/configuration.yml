@@ -11,14 +11,3 @@
     src: "{{ role_path }}/templates/{{ item }}.j2"
   notify: 'restart powerdns_admin.service'
   become: true
-
-- include: configure_database.yml
-
-- name: 'Update perms on working directory for idempotency'
-  file:
-    group: "{{ pdnsadmin_group }}"
-    owner: "{{ pdnsadmin_user }}"
-    path: "{{ pdnsadmin_work_path }}"
-    recurse: true
-    state: 'directory'
-  become: true

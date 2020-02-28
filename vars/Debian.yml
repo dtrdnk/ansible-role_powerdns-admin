@@ -19,6 +19,7 @@ __pdnsadmin_requirements:
   - yarn
   - nodejs
   - unzip
+  - git
 __yarn_key_url: 'https://dl.yarnpkg.com/debian/pubkey.gpg'
 __yarn_apt_repo: 'deb https://dl.yarnpkg.com/debian/ stable main'
 __node_key_url: 'https://deb.nodesource.com/gpgkey/nodesource.gpg.key'

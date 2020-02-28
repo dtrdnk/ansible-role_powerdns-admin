@@ -14,8 +14,10 @@
 
 - include: "{{ role_path }}/tasks/download/{{ pdnsadmin_download_method }}.yml"
 
-- include: install.yml
-
 - include: configuration.yml
 
+- include: install.yml
+
 - include: services.yml
+
+- include: update_perms.yml

@@ -1,0 +1,9 @@
+---
+- name: 'Update perms on working directory for idempotency'
+  file:
+    group: "{{ pdnsadmin_group }}"
+    owner: "{{ pdnsadmin_user }}"
+    path: "{{ pdnsadmin_work_path }}"
+    recurse: true
+    state: 'directory'
+  become: true

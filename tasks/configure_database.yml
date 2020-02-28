@@ -21,7 +21,7 @@
     append_privs: yes
     state: present
 
-- name: 'Init DB'
+- name: 'Init DB'  # noqa 305
   shell: "{{ pdnsadmin_venv_path }}/flask_exec flask db init"
   args:
     creates: "{{ pdnsadmin_version_path }}/migrations"

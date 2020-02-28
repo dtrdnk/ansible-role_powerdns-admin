@@ -8,6 +8,7 @@ PIDFile=/run/powerdns-admin/pid
 User={{ pdnsadmin_user }}
 Group={{ pdnsadmin_group }}
 WorkingDirectory={{ pdnsadmin_version_path }}
+RuntimeDirectory=powerdns-admin
 ExecStart={{ pdnsadmin_venv_path }}/bin/gunicorn --pid /run/powerdns-admin/pid --bind unix:/run/powerdns-admin/socket 'powerdnsadmin:create_app()'
 ExecReload=/bin/kill -s HUP $MAINPID
 ExecStop=/bin/kill -s TERM $MAINPID

@@ -5,6 +5,12 @@
     daemon_reload: true
   become: true
 
+- name: 'restart powerdns_admin.socket'
+  service:
+    name: powerdns_admin.socket
+    state: restarted
+  become: true
+
 - name: 'restart powerdns_admin.service'
   service:
     name: powerdns_admin.service

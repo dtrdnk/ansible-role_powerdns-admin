@@ -13,6 +13,6 @@ galaxy_info:
     versions:
     - bionic
 
-  galaxy_tags: ['powerdns', 'powerdns-admin']
+  galaxy_tags: ['powerdns']
 
 dependencies: []

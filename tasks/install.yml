@@ -15,6 +15,8 @@
     src: "{{ role_path }}/templates/flask_exec.j2"
   become: true
 
+- include: configure_database.yml
+
 - name: 'Generate asset files (1)'
   shell: "{{ pdnsadmin_venv_path }}/flask_exec yarn install --pure-lockfile && touch {{ pdnsadmin_version_path }}/assets_generated_1"
   args:
@@ -46,7 +48,10 @@
     group: 'root'
     owner: 'root'
     src: "{{ role_path }}/templates/systemd/powerdns_admin.socket.j2"
-  notify: 'reload systemd'
+  notify:
+    - 'reload systemd'
+    - 'restart powerdns_admin.socket'
+    - 'restart powerdns_admin.service'
   become: true
 
 - name: 'Add systemd tmpfile for powerdns'

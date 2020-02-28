@@ -1,1 +1,7 @@
 ---
+- name: "git checkout {{ pdnsadmin_git_url }} ({{ pdnsadmin_version }})"
+  git:
+    dest: "{{ pdnsadmin_version_path }}"
+    repo: "{{ pdnsadmin_git_url }}"
+    version: "{{ pdnsadmin_version }}"
+  become: true

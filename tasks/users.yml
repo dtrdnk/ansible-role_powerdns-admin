@@ -16,11 +16,4 @@
     system: true
   become: true
 
-- name: 'Ensure working directory exists'
-  file:
-    group: "{{ pdnsadmin_group }}"
-    owner: "{{ pdnsadmin_user }}"
-    path: "{{ pdnsadmin_work_path }}"
-    recurse: true
-    state: 'directory'
-  become: true
+- include: update_perms.yml
