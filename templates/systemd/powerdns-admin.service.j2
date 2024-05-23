@@ -1,6 +1,6 @@
 [Unit]
 Description={{ pdnsadmin_name }}
-Requires=powerdns_admin.socket
+Requires={{ _pdnsadmin_systemd_common_name }}.socket
 After=network.target
 
 [Service]

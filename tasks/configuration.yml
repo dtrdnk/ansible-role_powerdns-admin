@@ -1,13 +1,10 @@
 ---
 - name: 'Add PowerDNS Admin config'
-  loop:
-    - PowerDNS_Admin_config.py
   template:
-    backup: true
     dest: "{{ pdnsadmin_work_path }}/{{ item }}"
     group: "{{ pdnsadmin_group }}"
     mode: '660'
     owner: "{{ pdnsadmin_user }}"
-    src: "{{ role_path }}/templates/{{ item }}.j2"
-  notify: 'restart powerdns_admin.service'
-  become: true
+    src: "{{ item }}.j2"
+  loop:
+    - PowerDNS_Admin_config.py

@@ -6,18 +6,18 @@
 - name: 'Include distro specific variables'
   include_vars: "{{ ansible_distribution }}.yml"
 
-- include: users.yml
+- include_tasks: users.yml
 
-- include: parameters.yml
+- include_tasks: parameters.yml
 
-- include: requirements.yml
+- include_tasks: requirements.yml
 
-- include: "{{ role_path }}/tasks/download/{{ pdnsadmin_download_method }}.yml"
+- include_tasks: "download/{{ pdnsadmin_download_method }}.yml"
 
-- include: configuration.yml
+- include_tasks: configuration.yml
 
-- include: install.yml
+- include_tasks: install.yml
 
-- include: services.yml
+- include_tasks: services.yml
 
-- include: update_perms.yml
+- include_tasks: update_perms.yml

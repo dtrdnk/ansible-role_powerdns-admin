@@ -1,2 +1,3 @@
 ---
 # vars file for ansible-role_powerdns-admin
+_pdnsadmin_systemd_common_name: 'powerdns-admin'

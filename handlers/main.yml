@@ -3,22 +3,13 @@
 - name: 'reload systemd'
   systemd:
     daemon_reload: true
-  become: true
 
-- name: 'restart powerdns_admin.socket'
+- name: "restart {{ _pdnsadmin_systemd_common_name }}.socket"
   service:
-    name: powerdns_admin.socket
+    name: "{{ _pdnsadmin_systemd_common_name }}.socket"
     state: restarted
-  become: true
 
-- name: 'restart powerdns_admin.service'
+- name: "restart {{ _pdnsadmin_systemd_common_name }}.service"
   service:
-    name: powerdns_admin.service
+    name: "{{ _pdnsadmin_systemd_common_name }}.service"
     state: restarted
-  become: true
-
-- name: 'restart nginx'
-  service:
-    name: nginx
-    state: restarted
-  become: true

@@ -4,7 +4,6 @@
     name: "{{ pdnsadmin_group }}"
     state: 'present'
     system: true
-  become: true
 
 - name: Add PowerDNS user
   user:
@@ -14,6 +13,5 @@
     shell: '/sbin/nologin'
     state: 'present'
     system: true
-  become: true
 
-- include: update_perms.yml
+- include_tasks: update_perms.yml

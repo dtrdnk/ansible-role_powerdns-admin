@@ -2,14 +2,14 @@
 # defaults file for ansible-role_powerdns-admin
 pdnsadmin_download_method: 'url' # options: "url", "git"
 pdnsadmin_release_file: "{{ pdnsadmin_version }}.zip"
-pdnsadmin_release_url: "https://github.com/ngoduykhanh/PowerDNS-Admin/archive/{{ pdnsadmin_release_file }}"
-pdnsadmin_git_url: https://github.com/ngoduykhanh/PowerDNS-Admin.git
-
+pdnsadmin_release_url: "https://github.com/PowerDNS-Admin/PowerDNS-Admin/archive/{{ pdnsadmin_release_file }}"
+pdnsadmin_git_url: https://github.com/PowerDNS-Admin/PowerDNS-Admin.git
 pdnsadmin_name: 'PowerDNS-Admin'
-pdnsadmin_version: 'v0.2.1'
+pdnsadmin_version: 'v0.4.2'
 pdnsadmin_service_state: 'started'
-pdnsadmin_service_name: 'powerdns_admin.service'
 pdnsadmin_service_enabled: true
+pdnsadmin_salt: 0B3qiJw3_b786oEL2Npr7MP90PNN3fCw # Replace to your own value
+pdnsadmin_secret_key: aJrbiLec_d7HC50CAdqv11pBa-a2BMc # Replace to your own value
 pdnsadmin_service_path: '/etc/systemd/system'
 
 pdnsadmin_user: 'pdnsadmin'
@@ -19,14 +19,50 @@ pdnsadmin_work_path: "{{ pdnsadmin_user_home }}/{{ pdnsadmin_name }}"
 pdnsadmin_version_path: "{{ pdnsadmin_work_path }}/{{ pdnsadmin_name }}-{{ pdnsadmin_version | regex_replace('^v(.*)$', '\\1') }}"
 pdnsadmin_venv_path: "{{ pdnsadmin_work_path }}/venv"
 pdnsadmin_venv_python: "{{ pdnsadmin_venv_path }}/bin/python3"
-pdnsadmin_nodejs_repo: 'node_10.x'
+pdnsadmin_nodejs_repo: 'node_14.x'
 
-pdnsadmin_db_user: 'powerdnsadmin'
-pdnsadmin_db_name: 'powerdnsadmin'
-pdnsadmin_db_host: '127.0.0.1'
-# pdnsadmin_db_password: 'CHANGE_ME'
-pdnsadmin_sb_uri: "mysql://{{ pdnsadmin_db_user }}:{{ pdnsadmin_db_password }}@{{ pdnsadmin_db_host }}/{{ pdnsadmin_db_name }}"
+# Create or use existing database
+pdnsadmin_create_database: true
 
-pdnsadmin_server_name: '127.0.0.1'
-pdnsadmin_bind_addr: '127.0.0.1'
-pdnsadmin_bind_port: '80'
+# A dict with PostgreSQL or MySQL database you'd like to configure.
+# Configure either PostgreSQL or MySQL. Not both.
+pdnsadmin_database:
+  pgsql:
+    name: pdns_admin
+    host: 192.168.1.9
+    password: passWord
+    port: 5432
+    user: pdns_admin
+#  mysql:
+#    name: pdns_admin
+#    user: pdns_admin
+#    host: 192.168.2.15
+#    port: 3307
+#    password: passWord
+
+# SQLALCHEMY_DATABASE_URI=postgresql://username:password@hostname/database_name
+pdnsadmin_sqlalchemy_database_uri: >-
+  {%- if pdnsadmin_database.pgsql is defined -%}
+  postgresql://{{ pdnsadmin_database.pgsql.user }}:{{ pdnsadmin_database.pgsql.password }}@{{ pdnsadmin_database.pgsql.host }}:{{ pdnsadmin_database.pgsql.port }}/{{ pdnsadmin_database.pgsql.name }}
+  {%- elif pdnsadmin_database.mysql is defined -%}
+  mysql://{{ pdnsadmin_database.mysql.login_user }}:{{ pdnsadmin_database.mysql.login_password }}@{{ pdnsadmin_database.mysql.login_host }}:{{ pdnsadmin_database.mysql.login_port }}/{{ pdnsadmin_database.mysql.name }}
+  {%- endif -%}
+
+# Administrative credentials to create the MySQL database and user for PowerDNS Admin Server.
+pdnsadmin_mysql_databases_credentials: {}
+#pdns_mysql_databases_credentials:
+#  login_user: root
+#  login_password: rootPassword
+#  login_host: localhost
+
+# Administrative credentials to create the PostgreSQL database and user for PowerDNS Admin Server.
+pdnsadmin_pgsql_databases_credentials: {}
+#pdnsadmin_pgsql_databases_credentials:
+#  login_user: postgres
+#  login_password: passWord
+#  login_host: localhost
+
+# Path to postgres unix socket.
+# This is used for creating PowerDNS Admin Server database and user when the PostgreSQL server
+# is running on the same host as PowerDNS
+pdnsadmin_pgsql_unix_socket: "/var/run/postgresql"

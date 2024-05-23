@@ -6,7 +6,6 @@
     mode: "660"
     owner: "{{ pdnsadmin_user }}"
     url: "{{ pdnsadmin_release_url }}"
-  become: true
 
 - name: 'Extract PowerDNS-Admin archive'
   unarchive:
@@ -16,4 +15,3 @@
     owner: "{{ pdnsadmin_user }}"
     remote_src: true
     src: "{{ pdnsadmin_work_path }}/{{ pdnsadmin_release_file }}"
-  become: true

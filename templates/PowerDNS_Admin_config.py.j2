@@ -5,19 +5,27 @@ basedir = os.path.abspath(os.path.abspath(os.path.dirname(__file__)))
 ### BASIC APP CONFIG
 SALT = '{{ pdnsadmin_salt }}'
 SECRET_KEY = '{{ pdnsadmin_secret_key }}'
-BIND_ADDRESS = '{{ pdnsadmin_bind_addr }}'
-PORT = {{ pdnsadmin_bind_port }}
 HSTS_ENABLED = False
 
+{% if pdnsadmin_database.pgsql is defined %}
 ### DATABASE CONFIG
-SQLA_DB_USER = '{{ pdnsadmin_db_user }}'
-SQLA_DB_PASSWORD = '{{ pdnsadmin_db_password }}'
-SQLA_DB_HOST = '{{ pdnsadmin_db_host }}'
-SQLA_DB_NAME = '{{ pdnsadmin_db_name }}'
+SQLA_DB_USER = '{{ pdnsadmin_database.pgsql.user }}'
+SQLA_DB_PASSWORD = '{{ pdnsadmin_database.pgsql.password }}'
+SQLA_DB_HOST = '{{ pdnsadmin_database.pgsql.host }}'
+SQLA_DB_HOST = '{{ pdnsadmin_database.pgsql.port }}'
+SQLA_DB_NAME = '{{ pdnsadmin_database.pgsql.name }}'
 SQLALCHEMY_TRACK_MODIFICATIONS = True
+{% elif pdnsadmin_database.mysql is defined %}
+SQLA_DB_USER = '{{ pdnsadmin_database.mysql.login_user }}'
+SQLA_DB_PASSWORD = '{{ pdnsadmin_database.mysql.login_password }}'
+SQLA_DB_HOST = '{{ pdnsadmin_database.mysql.host }}'
+SQLA_DB_PORT = '{{ pdnsadmin_database.mysql.port }}'
+SQLA_DB_NAME = '{{ pdnsadmin_database.mysql.name }}'
+SQLALCHEMY_TRACK_MODIFICATIONS = True
+{% endif %}
 
 ### DATBASE
-SQLALCHEMY_DATABASE_URI = '{{ pdnsadmin_sb_uri }}'
+SQLALCHEMY_DATABASE_URI = '{{ pdnsadmin_sqlalchemy_database_uri }}'
 
 # SAML Authnetication
 SAML_ENABLED = False

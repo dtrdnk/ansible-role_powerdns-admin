@@ -1,0 +1,42 @@
+---
+- name: Create the PowerDNS MySQL databases
+  mysql_db:
+    login_user: "{{ pdnsadmin_mysql_databases_credentials.login_user }}"
+    login_password: "{{ pdnsadmin_mysql_databases_credentials.login_password }}"
+    login_host: "{{ pdnsadmin_database.mysql.host }}"
+    login_port: "{{ pdnsadmin_database.mysql.port | default('3306') }}"
+    name: "{{ pdnsadmin_database.mysql.name }}"
+    state: present
+  when:
+    - pdnsadmin_mysql_databases_credentials | length > 0
+  no_log: True
+
+- name: Grant PowerDNS access to the MySQL databases
+  mysql_user:
+    login_user: "{{ pdnsadmin_mysql_databases_credentials.login_user }}"
+    login_password: "{{ pdnsadmin_mysql_databases_credentials.login_password }}"
+    login_host: "{{ pdnsadmin_database.mysql.host }}"
+    login_port: "{{ pdnsadmin_database.mysql.port | default('3306') }}"
+    name: "{{ pdnsadmin_database.mysql.user }}"
+    password: "{{ pdnsadmin_database.mysql.password }}"
+    host: "{{ pdnsadmin_database.mysql.host }}"
+    priv: "{{ pdnsadmin_database.mysql.name }}.*:ALL"
+    append_privs: yes
+    state: present
+  throttle: 1
+  when:
+    - pdnsadmin_mysql_databases_credentials | length > 0
+  no_log: True
+
+- name: 'Init DB'  # noqa 305
+  shell: "{{ pdnsadmin_venv_path }}/flask_exec flask db init"
+  args:
+    creates: "{{ pdnsadmin_version_path }}/migrations"
+  become: true
+
+- name: 'Update DB'
+  shell: "{{ pdnsadmin_venv_path }}/flask_exec flask db upgrade && touch {{ pdnsadmin_version_path }}/db_upgraded"
+  args:
+    creates: "{{ pdnsadmin_version_path }}/db_upgraded"
+  notify: 'restart powerdns_admin.service'
+  become: true

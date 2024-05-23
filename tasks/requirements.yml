@@ -1,19 +1,17 @@
 ---
 - name: 'Install ansible apt_* requirements'
+  package:
+    name: "{{ item }}"
+    state: 'present'
   when: ansible_os_family == 'Debian'
   loop:
     - python3-apt
     - gpg
-  package:
-    name: "{{ item }}"
-    state: 'present'
-  become: true
 
-- include: sources.yml
+- include_tasks: sources.yml
 
 - name: 'Install system requirements'
-  loop: "{{ pdnsadmin_requirements }}"
   package:
     name: "{{ item }}"
     state: 'present'
-  become: true
+  loop: "{{ pdnsadmin_requirements }}"

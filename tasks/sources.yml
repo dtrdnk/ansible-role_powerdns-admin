@@ -1,28 +1,25 @@
 ---
 - name: 'Add apt keys'
+  apt_key:
+    url: "{{ item }}"
+    state: 'present'
   when: ansible_os_family == 'Debian'
   loop:
     - "{{ yarn_key_url }}"
     - "{{ node_key_url }}"
-  apt_key:
-    url: "{{ item }}"
-    state: 'present'
-  become: true
 
 - name: 'Add apt repos'
+  apt_repository:
+    repo: "{{ item }}"
+  register: pdnsadmin_apt_repos
   when: ansible_os_family == 'Debian'
   with_items: # loop just is not working here :/
     - "{{ yarn_apt_repo }}"
     - "{{ node_apt_repos }}"
-  apt_repository:
-    repo: "{{ item }}"
-  register: pdnsadmin_apt_repos
-  become: true
 
 - name: 'update apt cache'
+  apt:
+    update_cache: true
   when:
     - ansible_os_family == 'Debian'
     - pdnsadmin_apt_repos.changed
-  apt:
-    update_cache: true
-  become: true

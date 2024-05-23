@@ -1,75 +1,78 @@
 ---
-- name: 'Install pip requirements in a virtualenv'
-  pip:
-    requirements: "{{ pdnsadmin_version_path }}/requirements.txt"
+- name: Install or update pip
+  become_user: "{{ pdnsadmin_user }}"
+  ansible.builtin.pip:
+    name: pip
+    version: 22.3
     virtualenv: "{{ pdnsadmin_venv_path }}"
-  become: true
+  environment:
+    SETUPTOOLS_USE_DISTUTILS: stdlib
+
+- name: 'Exec pip requirements in a virtualenv'
+  ansible.builtin.pip:
+    requirements: "{{ pdnsadmin_version_path }}/requirements.txt"
+    executable: "{{ pdnsadmin_venv_path }}/bin/pip"
 
 - name: 'Add flask exec script'
   template:
-    backup: true
     dest: "{{ pdnsadmin_venv_path }}/flask_exec"
     group: "{{ pdnsadmin_group }}"
     mode: '770'
     owner: "{{ pdnsadmin_user }}"
-    src: "{{ role_path }}/templates/flask_exec.j2"
+    src: "flask_exec.j2"
   become: true
 
-- include: configure_database.yml
+- include_tasks: database-pgsql.yml
+  when:
+    - pdnsadmin_database.pgsql is defined and pdnsadmin_database.mysql is not defined
+    - pdnsadmin_create_database | bool
+  tags:
+    - db
+    - pgsql
+
+- include_tasks: database-mysql.yml
+  when:
+    - pdnsadmin_database.mysql is defined and pdnsadmin_database.pgsql is not defined
+    - pdnsadmin_create_database | bool
+  tags:
+    - db
+    - mysql
 
 - name: 'Generate asset files (1)'
   shell: "{{ pdnsadmin_venv_path }}/flask_exec yarn install --pure-lockfile && touch {{ pdnsadmin_version_path }}/assets_generated_1"
   args:
     creates: "{{ pdnsadmin_version_path }}/assets_generated_1"
-  become: true
 
 - name: 'Generate asset files (2)'
   shell: "{{ pdnsadmin_venv_path }}/flask_exec flask assets build && touch {{ pdnsadmin_version_path }}/assets_generated_2"
   args:
     creates: "{{ pdnsadmin_version_path }}/assets_generated_2"
-  become: true
 
 - name: 'Add systemd service'
   template:
-    backup: true
-    dest: "{{ pdnsadmin_service_path }}/{{ pdnsadmin_service_name }}"
+    dest: "{{ pdnsadmin_service_path }}/{{ _pdnsadmin_systemd_common_name }}.service"
     group: 'root'
     owner: 'root'
-    src: "{{ role_path }}/templates/systemd/{{ pdnsadmin_service_name }}.j2"
+    src: "systemd/{{ _pdnsadmin_systemd_common_name }}.service.j2"
   notify:
     - 'reload systemd'
-    - 'restart powerdns_admin.service'
-  become: true
+    - "restart {{ _pdnsadmin_systemd_common_name }}.service"
 
 - name: 'Add systemd socket'
   template:
-    backup: true
-    dest: "{{ pdnsadmin_service_path }}/powerdns_admin.socket"
+    dest: "{{ pdnsadmin_service_path }}/{{ _pdnsadmin_systemd_common_name }}.socket"
     group: 'root'
     owner: 'root'
-    src: "{{ role_path }}/templates/systemd/powerdns_admin.socket.j2"
+    src: "systemd/powerdns-admin.socket.j2"
   notify:
     - 'reload systemd'
-    - 'restart powerdns_admin.socket'
-    - 'restart powerdns_admin.service'
-  become: true
+    - "restart {{ _pdnsadmin_systemd_common_name }}.socket"
+    - "restart {{ _pdnsadmin_systemd_common_name }}.service"
 
 - name: 'Add systemd tmpfile for powerdns'
   template:
-    backup: true
-    dest: "/etc/tmpfiles.d/powerdns_admin.conf"
+    dest: "/etc/tmpfiles.d/{{ _pdnsadmin_systemd_common_name }}.conf"
     group: 'root'
     owner: 'root'
-    src: "{{ role_path }}/templates/systemd/powerdns_admin.conf.j2"
+    src: "systemd/powerdns-admin.conf.j2"
   notify: 'reload systemd'
-  become: true
-
-- name: 'Add nginx config'
-  template:
-    backup: true
-    dest: "/etc/nginx/sites-enabled/{{ pdnsadmin_name }}.conf"
-    group: 'root'
-    owner: 'root'
-    src: "{{ role_path }}/templates/nginx/{{ pdnsadmin_name }}.conf.j2"
-  notify: 'restart nginx'
-  become: true

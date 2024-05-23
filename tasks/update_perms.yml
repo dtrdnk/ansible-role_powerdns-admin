@@ -6,4 +6,3 @@
     path: "{{ pdnsadmin_work_path }}"
     recurse: true
     state: 'directory'
-  become: true

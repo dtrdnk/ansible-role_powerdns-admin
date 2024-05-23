@@ -1,0 +1,44 @@
+---
+- name: Create user for PowerDNS Admin Server to connect to PostgreSQL server
+  community.general.postgresql_user:
+    login_user: "{{ pdnsadmin_pgsql_databases_credentials.login_user }}"
+    login_password: "{{ pdnsadmin_pgsql_databases_credentials.login_password | default(omit) }}"
+    login_unix_socket: "{{ pdnsadmin_pgsql_unix_socket | default(omit) }}"
+    login_host: "{{ pdnsadmin_pgsql_databases_credentials.login_host | default(omit) }}"
+    port: "{{ pdnsadmin_database.pgsql.port | default(omit) }}"
+    name: "{{ pdnsadmin_database.pgsql.user }}"
+    password: "{{ pdnsadmin_database.pgsql.password }}"
+    state: present
+  throttle: 1
+  become: "{{ 'no' if pdnsadmin_pgsql_databases_credentials.host is defined else 'yes' }}"
+  become_user: "{{ pdnsadmin_pgsql_databases_credentials.login_user }}"
+  when:
+    - pdnsadmin_pgsql_databases_credentials | length > 0
+  no_log: True
+
+- name: Create the PowerDNS Admin PostgreSQL database
+  community.general.postgresql_db:
+    login_user: "{{ pdnsadmin_pgsql_databases_credentials.login_user }}"
+    login_password: "{{ pdnsadmin_pgsql_databases_credentials.login_password | default(omit) }}"
+    login_unix_socket: "{{ pdnsadmin_pgsql_unix_socket | default(omit) }}"
+    login_host: "{{ pdnsadmin_pgsql_databases_credentials.login_host | default(omit) }}"
+    port: "{{ pdnsadmin_database.pgsql.port | default(omit) }}"
+    name: "{{ pdnsadmin_database.pgsql.name }}"
+    state: present
+    owner: "{{ pdnsadmin_database.pgsql.user }}"
+  when:
+    - pdnsadmin_pgsql_databases_credentials | length > 0
+  become: "{{ 'no' if pdnsadmin_pgsql_databases_credentials.host is defined else 'yes' }}"
+  become_user: "{{ pdnsadmin_pgsql_databases_credentials.login_user }}"
+  no_log: True
+
+- name: 'Init DB'  # noqa 305
+  shell: "{{ pdnsadmin_venv_path }}/flask_exec flask db init"
+  args:
+    creates: "{{ pdnsadmin_version_path }}/migrations"
+
+- name: 'Update DB'
+  shell: "{{ pdnsadmin_venv_path }}/flask_exec flask db upgrade && touch {{ pdnsadmin_version_path }}/db_upgraded"
+  args:
+    creates: "{{ pdnsadmin_version_path }}/db_upgraded"
+  notify: "restart {{ _pdnsadmin_systemd_common_name }}.service"
