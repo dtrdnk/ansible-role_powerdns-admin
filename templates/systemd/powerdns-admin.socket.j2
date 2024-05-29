@@ -1,5 +1,6 @@
 [Unit]
 Description={{ pdnsadmin_name }} socket
+After=multi-user.target
 
 [Socket]
 ListenStream=/run/powerdns-admin/socket
